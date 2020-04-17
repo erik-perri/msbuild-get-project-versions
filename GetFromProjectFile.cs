@@ -1,7 +1,7 @@
-﻿using Microsoft.Build.Evaluation;
-using Microsoft.Build.Framework;
+﻿using Microsoft.Build.Framework;
 using System;
 using System.IO;
+using System.Xml.Linq;
 
 namespace GetProjectVersions
 {
@@ -56,11 +56,27 @@ namespace GetProjectVersions
             AssemblyVersion = null;
             AssemblyFileVersion = null;
 
-            var project = new Project(file);
+            var definition = XDocument.Load(file);
+            foreach (var group in definition.Element("Project")?.Elements("PropertyGroup"))
+            {
+                foreach (var property in group.Elements())
+                {
+                    switch (property.Name.LocalName)
+                    {
+                        case "Version":
+                            PackageVersion = property.Value;
+                            break;
 
-            PackageVersion = project.GetPropertyValue("Version");
-            AssemblyVersion = project.GetPropertyValue("AssemblyVersion");
-            AssemblyFileVersion = project.GetPropertyValue("FileVersion");
+                        case "AssemblyVersion":
+                            AssemblyVersion = property.Value;
+                            break;
+
+                        case "FileVersion":
+                            AssemblyFileVersion = property.Value;
+                            break;
+                    }
+                }
+            }
         }
 
         public IBuildEngine BuildEngine { get; set; }
