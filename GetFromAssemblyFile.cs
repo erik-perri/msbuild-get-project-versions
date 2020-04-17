@@ -59,7 +59,7 @@ namespace GetProjectVersions
                     var line = streamReader.ReadLine();
                     var match = Regex.Match(
                         line,
-                        @"(?:(?<type>AssemblyFileVersion|AssemblyVersion)\("")(?<version>(\d*)\.(\d*)(\.(\d*)(\.(\d*))?)?)(?:""\))",
+                        @"(?:(?<type>AssemblyFileVersion|AssemblyVersion)(Attribute)?\("")(?<version>(\d*)\.(\d*)(\.(\d*)(\.(\d*))?)?)(?:""\))",
                         RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline |
                         RegexOptions.ExplicitCapture
                     );
