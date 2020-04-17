@@ -11,6 +11,8 @@ namespace GetProjectVersions
         [Required]
         public string AssemblyFile { get; set; }
 
+        public bool StripToBuildNumber { get; set; }
+
         [Output]
         public string AssemblyVersion { get; set; }
 
@@ -69,16 +71,28 @@ namespace GetProjectVersions
                         switch (match.Groups["type"].Value)
                         {
                             case "AssemblyVersion":
-                                AssemblyVersion = match.Groups["version"].Value;
+                                AssemblyVersion = StripVersion(match.Groups["version"].Value);
                                 break;
 
                             case "AssemblyFileVersion":
-                                AssemblyFileVersion = match.Groups["version"].Value;
+                                AssemblyFileVersion = StripVersion(match.Groups["version"].Value);
                                 break;
                         }
                     }
                 }
             }
+        }
+
+        private string StripVersion(string versionString)
+        {
+            if (!StripToBuildNumber)
+            {
+                return versionString;
+            }
+
+            var version = Version.Parse(versionString);
+
+            return $"{version.Major}.{version.Minor}.{version.Build}";
         }
 
         public IBuildEngine BuildEngine { get; set; }
